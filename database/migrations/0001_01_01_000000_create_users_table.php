@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('role')->default('user');
+            $table->string('exam_id')->nullable(); // Add exam_id field
             $table->string('contact');
             $table->string('password');
             $table->rememberToken();

@@ -56,6 +56,45 @@ Route::get('/result', [ResultController::class, 'showResult'])->name('result');
 //ViewExamController
 Route::get('/examview/{packageName}', [ViewExamController::class, 'showViews'])->name('examview');
 
+// Authentication routes for teacher
+Route::middleware(['auth'])->group(function () {
+    // Teacher routes
+    Route::get('/teacher/profile', function () {
+        return view('teacher.profile'); 
+    })->name('teacher.profile');
+
+    Route::get('/teacher/dashboard', function () {
+        return view('teacher.dashboard'); 
+    })->name('teacher.dashboard');
+
+    Route::resource('quizzes', QuizController::class);
+    Route::resource('questions', QuestionController::class);
+    Route::get('/questions/{quizId}/fetch', [QuestionController::class, 'fetchQuestions'])->name('questions.fetch');
+    Route::resource('tags', TagController::class);
+});
+  // Exam routes
+  Route::get('/exam/{examTitle}', [ExamController::class, 'exam'])->name('exam');
+  Route::get('/exam/start/{examTitle}', [ExamController::class, 'startExam'])->name('start.exam');
+  Route::post('/exam/result', [ExamController::class, 'result'])->name('result');
+
+  
+  //Route::get('/student/question/{quiz_id}/{question_number}', [StudentController::class, 'showQuestion'])->name('student.showQuestion');
+  Route::get('/student/quiz/{quiz_id}/question/{question_number}', [StudentController::class, 'showQuestion'])->name('student.showQuestion');
+
+  //next question
+  Route::post('/quiz/{quizId}/question/next', [StudentController::class, 'nextQuestion'])->name('quiz.nextQuestion');
+
+
+
+
+Route::post('/questions/{id}/answer', [QuestionController::class, 'submitAnswer'])->name('questions.answer');
+Route::get('/questions/{id}', [QuestionController::class, 'show'])->name('questions.show');
+
+//quiz time
+Route::post('/quiz/{id}/save-time', [QuizController::class, 'saveTime'])->name('quiz.saveTime');
+
+Route::get('/exam-summary', [StudentController::class, 'showExamSummary'])->name('exam.summary');
+
 
 
 

@@ -9,9 +9,21 @@ class Tag extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'name',
+        'name', 
+        'created_by', 
+        'updated_by'
     ];
-    public function quizzes() {
-        return $this->belongsToMany(Quiz::class); // Adjust the Quiz class if needed
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function updater()
+    {
+        return $this->belongsTo(User::class, 'updated_by');
+    }
+    public function quizzes()
+    {
+        return $this->belongsToMany(Quiz::class, 'quiz_tag');
     }
 }

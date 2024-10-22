@@ -86,15 +86,20 @@
         <h3>APS KLC TRAIL EXAM</h3>
         <div class="user-icon">
             <div class="user-info">
-                <div class="user-name">
-                    <span>{{ $studentName }}</span>
-                    <i class="fas fa-user-circle"></i> <!-- Font Awesome user icon -->
-                </div>
+            <div class="user-name">
+                <span>{{ auth()->user()->username }}</span> <!-- Updated username will display here -->
+                <i class="fas fa-user-circle"></i>
+            </div>
                 <span class="role">Student</span>
             </div>
             <div class="hover-menu">
                 <a href="{{ route('profile') }}">Profile</a>
-                <a href="#">Logout</a>
+                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                      @csrf
+                    </form>
+                    <a href="#" class="nav-link" id="logout-button" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                      <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
             </div>
         </div>
     </div>
@@ -106,10 +111,10 @@
        
             <div class="card-body">
                 <h5>Your Exam ID: {{ $examId }}</h5>
-                <p class="card-text"><strong>Name of Student:</strong> {{ $studentName }}</p>
+                <p class="card-text"><strong>Name of Student:</strong> {{ auth()->user()->username }}</p>
                 <p class="card-text"><strong>Exam Title: {{ $examTitle }}</strong></p>
-                <a href="#" class="btn btn-primary">Get Started</a>
-                <a href="#" class="btn btn-secondary">Cancel</a>
+                <a href="{{ route('start.exam', ['examTitle' => $examTitle]) }}" class="btn btn-primary">Get Started</a>
+                <a href="{{ route('student.dashboard') }}" class="btn btn-secondary">Cancel</a>
             </div>
         </div>
         <div class="alert alert-info mt-4">

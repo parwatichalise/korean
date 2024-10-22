@@ -10,7 +10,8 @@ class Student extends Model
     use HasFactory;
 
     
+   
     protected $table = 'students'; // This is the table name in the database
 
-    protected $fillable = ['name', 'email', 'password']; // Fillable fields for mass assignment
+    protected $fillable = ['name', 'email', 'password']; 
 }
