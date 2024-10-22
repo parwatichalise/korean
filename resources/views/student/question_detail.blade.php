@@ -13,32 +13,32 @@
             max-height: 300px;
             object-fit: contain;
         }
-        
+
         /* Styling for the answer options */
         .answers ol {
             list-style: none;
             padding-left: 0;
         }
-        
+
         .answers ol li {
             display: flex;
             align-items: center;
             margin-bottom: 10px;
         }
-        
+
         .answers ol li input[type="radio"] {
             margin-right: 10px;
         }
-        
+
         .question-content {
             display: flex;
         }
-        
+
         .question-image-container {
             width: 40%; /* Adjust the width of the image section */
             padding-right: 20px;
         }
-        
+
         .question-text-container {
             width: 60%; /* Adjust the width of the question and answer section */
         }
@@ -85,13 +85,20 @@
         </div>
     </div>
 
-    <!-- Next and Previous buttons -->
-    <div class="flex justify-between mt-4">
+    <!-- Next and Previous buttons with total question button in the middle -->
+    <div class="flex justify-between items-center mt-4">
         @if ($prevQuestionNumber)
             <a href="{{ route('student.showQuestion', ['quiz_id' => $quiz->id, 'question_number' => $prevQuestionNumber]) }}" class="bg-blue-500 text-white p-2 rounded">Previous</a>
         @else
             <button class="bg-gray-500 text-white p-2 rounded cursor-not-allowed" disabled>Previous</button>
         @endif
+
+        <!-- Button displaying total number of questions -->
+        <a href="{{url('exam/start/question') }}">
+        <button class="bg-blue-400 text-black p-2 rounded cursor-default">
+            Total Questions: {{ $quiz->total_questions }}
+        </button>
+    </a>
 
         @if ($nextQuestionNumber)
             <a href="{{ route('student.showQuestion', ['quiz_id' => $quiz->id, 'question_number' => $nextQuestionNumber]) }}" class="bg-blue-500 text-white p-2 rounded">Next</a>
@@ -100,7 +107,6 @@
         @endif
     </div>
 </div>
-
 
 <script>
     // Set total time for the quiz (20 minutes = 1200 seconds)
@@ -149,7 +155,6 @@
 
     startTimer();
 </script>
-
 
 </body>
 </html>

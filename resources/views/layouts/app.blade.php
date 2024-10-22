@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title> Dashboard</title>
+  <title>Dashboard</title>
 
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -25,14 +25,6 @@
   <link rel="stylesheet" href="plugins/daterangepicker/daterangepicker.css">
   <!-- summernote -->
   <link rel="stylesheet" href="plugins/summernote/summernote-bs4.min.css">
-
-  
-
-  
-  
-
-
-
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
   
@@ -45,7 +37,6 @@
 
   <!-- Navbar -->
   <nav class="main-header navbar navbar-expand navbar-white navbar-light">
-    <!-- Left navbar links -->
     <ul class="navbar-nav">
       <li class="nav-item">
         <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
@@ -105,7 +96,7 @@
               <li class="nav-item">
                 <a href="" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
-                <p>Quiz</p>
+                  <p>Quiz</p>
                 </a>
               </li>
               <li class="nav-item">
@@ -115,8 +106,7 @@
                 </a>
               </li>
               <li class="nav-item">
-                <a href="
-                " class="nav-link">
+                <a href="" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Tag</p>
                 </a>
@@ -144,13 +134,13 @@
                 </a>
               </li>
               <li class="nav-item">
-                <a href="pages/UI/buttons.html" class="nav-link">
+                <a href="" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>User</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="pages/UI/sliders.html" class="nav-link">
+                <a href="" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Tag</p>
                 </a>
@@ -160,18 +150,11 @@
 
           <!-- Settings Menu Item -->
           <li class="nav-item">
-            <a href="#" class="nav-link">
+            <a href="{{ route('user.list') }}" class="nav-link">
               <i class="nav-icon fas fa-cog"></i>
-              <p>Settings <i class="fas fa-angle-left right"></i></p>
+              <p>Users <i class="fas fa-angle-left right"></i></p>
             </a>
-            <ul class="nav nav-treeview">
-              <li class="nav-item">
-                <a href="pages/forms/general.html" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Change Password</p>
-                </a>
-              </li>
-            </ul>
+            
           </li>
 
           <!-- Results Menu Item -->
@@ -185,16 +168,7 @@
             </ul>
           </li>
 
-          <!-- Messages Menu Item -->
-          <li class="nav-item">
-            <a href="#" class="nav-link">
-              <i class="nav-icon fas fa-comments"></i>
-              <p>Messages</p>
-            </a>
-            <ul class="nav nav-treeview">
-              <!-- Add sub-menu items if needed -->
-            </ul>
-          </li>
+         
 
         </ul>
       </nav>
@@ -208,7 +182,7 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1></h1>
+            <h1>Dashboard</h1> <!-- You can add a title here -->
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
@@ -223,10 +197,9 @@
     <!-- Main content -->
     <section class="content">
       <div class="container-fluid">
-        @yield('content') <!-- Here is where your content will be injected -->
+        @yield('content') <!-- Content will be injected here -->
       </div>
     </section>
-    
     <!-- /.content -->
   </div>
   <!-- /.content-wrapper -->
@@ -239,16 +212,13 @@
 </div>
 <!-- ./wrapper -->
 
-<!-- jQuery -->
+<!-- Scripts -->
 <script src="plugins/jquery/jquery.min.js"></script>
-<!-- jQuery UI 1.11.4 -->
 <script src="plugins/jquery-ui/jquery-ui.min.js"></script>
 <script>
   $.widget.bridge('uibutton', $.ui.button)
 </script>
-<!-- Bootstrap 4 -->
 <script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-<!-- Other scripts -->
 <script src="dist/js/adminlte.js"></script>
 </body>
 </html>

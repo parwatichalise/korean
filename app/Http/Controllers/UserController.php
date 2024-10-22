@@ -11,13 +11,11 @@ class UserController extends Controller
     public function index(){
         return view('user.user');
     }
-    public function list()
+    
+public function list()
 {
-    $users = User::where('role', 'user')->get();
-        
-    // Return the view with the user data
+    $users = User::all(); // Fetch all users, adjust as needed for your application logic
     return view('user.list', compact('users'));
-    
-    
 }
+
 }

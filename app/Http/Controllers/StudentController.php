@@ -101,6 +101,7 @@ class StudentController extends Controller
         // Get the next and previous question numbers
         $nextQuestionNumber = $question_number < $totalQuestions ? $question_number + 1 : null;
         $prevQuestionNumber = $question_number > 1 ? $question_number - 1 : null;
+       
     
         // Return the view with the necessary data
         return view('student.question_detail', [
@@ -112,6 +113,7 @@ class StudentController extends Controller
             'timeRemaining' => $timeRemaining,
             'nextQuestionNumber' => $nextQuestionNumber,
             'prevQuestionNumber' => $prevQuestionNumber
+           
         ]);
 
         
