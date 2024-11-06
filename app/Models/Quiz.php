@@ -15,8 +15,15 @@ class Quiz extends Model
         'photo',
         'time_duration',
         'active',
+        'created_by',
+
     ];
-    public function tags() {
-        return $this->belongsToMany(Tag::class); // Adjust the Tag class if needed
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class, 'quiz_tag', 'quiz_id', 'tag_id');
     }
+    public function package()
+{
+    return $this->belongsTo(Package::class);
+}
 }

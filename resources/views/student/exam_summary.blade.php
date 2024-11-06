@@ -62,7 +62,7 @@
 
             <div class="flex justify-center gap-4 mt-4">
                 <a href="#" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">VIEW RESULT</a>
-                <a href="#" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">RESULTS LIST</a>
+                <a href="{{route('result')}}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">RESULTS LIST</a>
                 <a href="{{route('student.dashboard')}}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">BACK TO MAIN PAGE</a>
             </div>
         </div>

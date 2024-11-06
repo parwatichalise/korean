@@ -115,17 +115,14 @@
             <div class="questions-wrapper">
                 @for ($i = 1; $i <= 20; $i++)
                     @php
-                        // Find the question with the current question number
                         $question = $questions->where('question_number', $i)->first();
                     @endphp
                     <div class="question-box">
                         @if ($question)
-                            <!-- If the question exists, create a clickable link -->
                             <a href="{{ route('student.showQuestion', ['quiz_id' => $question->quiz_id, 'question_number' => $question->question_number]) }}" class="btn">
                                 {{ $i }}
                             </a>
                         @else
-                            <!-- If no question exists for the number, display the number as plain text -->
                             <span class="btn disabled">{{ $i }}</span>
                         @endif
                     </div>
@@ -133,13 +130,6 @@
             </div>
         </div>
     </div>
-    
-    
-
-
-                
-          
-        
   
     <!-- Listening Questions Section -->
     <div class="col-md-6">
@@ -192,12 +182,12 @@
             const interval = setInterval(function () {
                 minutes = parseInt(timer / 60, 10);
                 seconds = parseInt(timer % 60, 10);
-
+    
                 minutes = minutes < 10 ? "0" + minutes : minutes;
                 seconds = seconds < 10 ? "0" + seconds : seconds;
-
+    
                 display.textContent = minutes + ":" + seconds;
-
+    
                 if (--timer < 0) {
                     clearInterval(interval);
                     alert("Time's up! Your exam will be submitted.");
@@ -205,12 +195,12 @@
                 }
             }, 1000);
         }
-
+    
         window.onload = function () {
-            let timeLimit = {{ $timeLimit }}; // Time limit in seconds from backend
+            let timeLimit = {{ $timeLimitInSeconds }}; // Time limit in seconds from backend
             let display = document.querySelector('#time-remaining');
             startTimer(timeLimit, display);
         };
-    </script>
+    </script>    
 </body>
 </html>

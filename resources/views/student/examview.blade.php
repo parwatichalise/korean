@@ -40,7 +40,7 @@
         }
 
         .top-bar {
-            background-color: #007bff; /* Your desired top bar color */
+            background-color: #007bff; 
             padding: 10px;
             color: white;
             display: flex;
@@ -56,65 +56,32 @@
             color: white;
         }
 
-        /* Styles for the hover menu */
         .hover-menu {
-            display: none; /* Hide by default */
-            position: absolute; /* Position relative to the dropdown */
-            background-color: white; /* Background color for the dropdown */
-            border: 1px solid #ddd; /* Border for the dropdown */
-            z-index: 1000; /* Ensure it appears above other content */
-            right: 0; /* Align it to the right */
-            width: 150px; /* Width of the dropdown */
+            display: none; 
+            position: absolute; 
+            background-color: white; 
+            border: 1px solid #ddd; 
+            z-index: 1000; 
+            right: 0; 
+            width: 150px; 
         }
 
         .user-icon:hover .hover-menu {
-            display: block; /* Show on hover */
+            display: block; 
         }
 
         .hover-menu a {
-            color: black; /* Color for dropdown items */
-            padding: 10px; /* Padding for items */
-            text-decoration: none; /* No underline */
-            display: block; /* Block level */
+            color: black; 
+            padding: 10px; 
+            text-decoration: none; 
+            display: block; 
         }
 
         .hover-menu a:hover {
-            background-color: #007bff; /* Change color on hover */
-            color: white; /* Text color on hover */
+            background-color: #007bff; 
+            color: white; 
         }
 
-        .edit-button {
-            position: absolute; /* Positioning for lower right corner */
-            right: 20px;
-            bottom: 20px;
-        }
-
-        /* Align user icon and text */
-        .user-info {
-            display: flex;
-            flex-direction: column; /* Stack elements vertically */
-            align-items: flex-start; /* Align items to the left */
-        }
-
-        .user-info .user-name {
-            display: flex; /* Use flexbox for name and icon */
-            align-items: center; /* Center the icon with text */
-        }
-
-        .user-info .user-name span {
-            margin-right: 8px; /* Space between text and icon */
-        }
-
-        .user-info .user-name .fas {
-            font-size: 30px; /* Size of the Font Awesome icon */
-        }
-
-        /* To ensure alignment of the name and role */
-        .user-info span.role {
-            margin-left: 0px; /* Adjust margin to align with the name */
-        }
-
-        /* Styles for the package card */
         .package-card {
             border: 1px solid #ddd;
             border-radius: 8px;
@@ -140,11 +107,6 @@
             margin-bottom: 5px;
         }
 
-        .package-info p {
-            margin: 0;
-            color: #777;
-        }
-
         .status {
             background-color: #28a745;
             color: white;
@@ -165,31 +127,33 @@
             background-color: #218838;
         }
 
-        /* Spacing between back button and navbar */
         .back-button-wrapper {
-            margin-top: 20px; /* Adjust this value for spacing */
+            margin-top: 20px; 
         }
 
-        /* Styles for back button */
         .back-button {
             display: inline-block;
             margin-bottom: 20px;
-            background-color: white; /* Button background */
-            color: #007bff; /* Text color */
+            background-color: white; 
+            color: #007bff; 
             padding: 10px 15px;
-            border-radius: 5px; /* Rounded corners */
+            border-radius: 5px; 
             text-decoration: none;
-            border: 1px solid #007bff; /* Border similar to screenshot */
-            font-weight: bold; /* Bold text */
+            border: 1px solid #007bff; 
+            font-weight: bold; 
         }
 
         .back-button:hover {
-            background-color: #f0f0f0; /* Lighter hover effect */
+            background-color: #f0f0f0; 
             color: #0056b3;
-            border-color: #0056b3; /* Change border on hover */
+            border-color: #0056b3; 
             text-decoration: none;
         }
 
+        .footer {
+            margin-top: 20px; /* Ensure footer spacing */
+            text-align: center; /* Center align footer text */
+        }
     </style>
 </head>
 
@@ -218,18 +182,18 @@
             <div class="user-info">
                 <div class="user-name">
                     <span>{{ $studentName }}</span>
-                    <i class="fas fa-user-circle"></i> <!-- Font Awesome user icon -->
+                    <i class="fas fa-user-circle"></i>
                 </div>
-                <span class="role">Student</span> 
+                <span class="role">Student</span>
             </div>
             <div class="hover-menu">
                 <a href="{{ route('profile') }}">Profile</a>
                 <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                     @csrf
-                  </form>
-                  <a href="#" class="nav-link" id="logout-button" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                </form>
+                <a href="#" class="nav-link" id="logout-button" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                     <i class="fas fa-sign-out-alt"></i> Logout
-                  </a>
+                </a>
             </div>
         </div>
     </div>
@@ -241,49 +205,117 @@
         </a>
     </div>
 
-    <!-- Package Section (From the Image) -->
-    <div class="package-card">
-        <img src="{{ asset($imageUrl) }}" alt="Package Image" width="200px"> 
-        <div class="package-info">
-            <h5>{{ $packageName }}</h5>
-            <p>13 exams</p>
-            <span class="status">Available</span>
-        </div>
-        <button class="buy-button" data-toggle="modal" data-target="#buyExamModal">BUY RS. 10</button>
+   <!-- Package Card -->
+@if($package)
+<div class="package-card">
+    <img src="{{ asset('/images/package.png') }}" alt="Package Image" width="200px">
+    <div class="package-info">
+        <h5>{{ $package->name }}</h5>
+        <p>{{ $packageQuizzes->count() . ' exam' . ($packageQuizzes->count() !== 1 ? 's' : '') }}</p>
+        <span class="status">
+            @php
+                $isActive = $packageQuizzes->contains(fn($quiz) => $quiz->price === $package->price);
+            @endphp
+            {{ $isActive ? 'Available' : 'Unavailable' }}
+        </span>
     </div>
-    <!-- Modal -->
+    @if($isActive) 
+        <button class="btn buy-button" 
+                data-package-name="{{ $package->name }}" 
+                data-price="{{ $package->price }}" 
+                data-package-id="{{ $package->id }}" 
+                data-toggle="modal" 
+                data-target="#buyExamModal">
+            BUY RS. {{ $package->price }}
+        </button>        
+    @endif
+</div>
+@else
+<p>No Package Available</p>
+@endif
+
+<!-- Modal for eSewa Payment -->
 <div class="modal fade" id="buyExamModal" tabindex="-1" aria-labelledby="buyExamModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <!-- Modal Header -->
-      <div class="modal-header">
-        <h5 class="modal-title" id="buyExamModalLabel">Buy Exam</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="buyExamModalLabel">Buy Exam</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="https://uat.esewa.com.np/epay/main" method="POST">
+                    @csrf
+                    <h5 id="modal-package-name"></h5>
+                    <p id="modal-price"></p>
 
-      <!-- Modal Body -->
-      <div class="modal-body">
-        <h5>Full Sets Packages</h5>
-        <p>Price: Rs.2500</p>
-        <button class="btn btn-success">BUY WITH ESEWA</button>
-      </div>
+                    <input type="hidden" name="tAmt" id="totalAmount" value="">
+                    <input type="hidden" name="amt" id="packagePriceInput" value="">
+                    <input type="hidden" name="txAmt" value="0">
+                    <input type="hidden" name="psc" value="0">
+                    <input type="hidden" name="pdc" value="0">
+                    <input type="hidden" name="scd" value="EPAYTEST">
+                    <input type="hidden" name="pid" id="productID" value="">
+                    <input type="hidden" name="su" value="{{ route('payment.success') }}">
+                    <input type="hidden" name="fu" value="{{ route('payment.failure') }}">
+
+                    <button type="submit" class="btn btn-success">BUY WITH ESEWA</button>
+                </form>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Attach event listeners to buy buttons
+        document.querySelectorAll('.buy-button').forEach(button => {
+            button.addEventListener('click', function () {
+                const packageName = this.dataset.packageName;
+                const price = this.dataset.price;
+
+                // Set modal content
+                document.getElementById('modal-package-name').textContent = packageName;
+                document.getElementById('modal-price').textContent = `Price: Rs. ${price}`;
+                document.getElementById('packagePriceInput').value = price;
+                document.getElementById('totalAmount').value = price;
+                document.getElementById('productID').value = 'PID_' + Date.now();
+            });
+        });
+
+        // Handle popup close
+        const popup = document.getElementById('payment-popup');
+        if (popup) {
+            popup.style.display = 'block';
+            document.getElementById('close-popup').addEventListener('click', function () {
+                popup.style.display = 'none';
+            });
+        }
+    });
+</script>
+
+<script>
+   $(document).ready(function() {
+    $('.buy-button').click(function() {
+        const packageName = $(this).data('package-name');
+        const packagePrice = $(this).data('price');
+
+        // Set the values in the modal
+        $('#modal-package-name').text(packageName);
+        $('#modal-price').text('Price: Rs. ' + packagePrice);
+        $('#totalAmount').val(packagePrice);
+        $('#packagePriceInput').val(packagePrice);
+        $('#productID').val('PID_' + Date.now()); // Use a consistent ID format
+    });
+});
+</script>
+
+
 </div>
-
-<!-- jQuery -->
-<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-
-<!-- Popper.js -->
+<!-- Bootstrap JS, Popper.js, and jQuery -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-
-<!-- Bootstrap JS -->
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
-
 </body>
 </html>

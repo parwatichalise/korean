@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class User extends Authenticatable
 {
@@ -25,7 +26,7 @@ class User extends Authenticatable
         'email',
         'password',
     ];
-    public function isAdmin()
+    public function Admin()
     {
         return $this->role === 'admin';
     }
@@ -57,4 +58,24 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+     /**
+     * Determine if the user is an admin.
+     *
+     * @return bool
+     */
+    public function isAdmin()
+    {
+        return $this->role === 'admin'; // Adjust this condition as needed
+    }
+    public function packages(): BelongsToMany
+    {
+        return $this->belongsToMany(Package::class, 'package_user'); // Adjust the pivot table name as needed
+    }
+
+    // Add your hasPurchasedPackage method here or keep it as is
+    public function hasPurchasedPackage($packageId): bool
+    {
+        return $this->packages()->where('packages.id', $packageId)->exists();
+    }
+
 }

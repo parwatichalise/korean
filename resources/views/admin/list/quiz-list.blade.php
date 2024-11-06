@@ -1,4 +1,4 @@
-@extends('teacher.dashboard')
+@extends('layouts.app')
 
 @section('content')
 <div class="container">
@@ -43,7 +43,7 @@
                 <td>{{ $quiz->heading }}</td>
                 <td>{{ $quiz->sub_heading }}</td>
                 <td>{{ $quiz->price }}</td>
-                <td>{{ $quiz->time_duration }} minutes</td>                
+                <td>{{ $quiz->time_duration }}</td>
                 <td>{{ $quiz->created_by }}</td>
                 <td>{{ $quiz->active ? 'Yes' : 'No' }}</td>
                 <td>

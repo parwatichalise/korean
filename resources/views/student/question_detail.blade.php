@@ -67,7 +67,7 @@
 
                 <!-- Options -->
                 <div class="answers">
-                    <form action="{{ route('questions.answer', $question->id) }}" method="POST">
+                    <form id="answer-form">
                         @csrf
                         <ol>
                             @foreach($question->answers as $answer)
@@ -79,6 +79,7 @@
                                 </li>
                             @endforeach
                         </ol>
+                        <button type="submit" class="bg-blue-500 text-white p-2 rounded mt-2">Submit Answer</button>
                     </form>
                 </div>
             </div>
@@ -92,68 +93,73 @@
         @else
             <button class="bg-gray-500 text-white p-2 rounded cursor-not-allowed" disabled>Previous</button>
         @endif
-
-        <!-- Button displaying total number of questions -->
-        <a href="{{url('exam/start/question') }}">
-        <button class="bg-blue-400 text-black p-2 rounded cursor-default">
-            Total Questions: {{ $quiz->total_questions }}
-        </button>
-    </a>
-
+        <a href="{{ route('start.exam', ['examTitle' => $quiz->heading]) }}" class="btn btn-primary" type="button">Total Questions</a>
         @if ($nextQuestionNumber)
             <a href="{{ route('student.showQuestion', ['quiz_id' => $quiz->id, 'question_number' => $nextQuestionNumber]) }}" class="bg-blue-500 text-white p-2 rounded">Next</a>
         @else
             <button class="bg-gray-500 text-white p-2 rounded cursor-not-allowed" disabled>Next</button>
         @endif
     </div>
+
+    <!-- Solved and Unsolved Counts -->
+    <div class="progress mt-4">
+        <p>Total Questions: {{ $totalQuestions }}</p>
+        <p>Solved: {{ $solvedQuestions }}</p>
+        <p>Unsolved: {{ $unsolvedQuestions }}</p>
+    </div>    
 </div>
 
 <script>
-    // Set total time for the quiz (20 minutes = 1200 seconds)
-    let timeRemaining = localStorage.getItem('quiz-{{ $quiz->id }}-timeRemaining');
-
-    // Debug: Log the retrieved time from localStorage
-    console.log('Retrieved time from localStorage:', timeRemaining);
-
-    // If timeRemaining is not found in localStorage (first question load), initialize it with 1200 seconds (20 minutes)
-    if (timeRemaining === null) {
-        timeRemaining = 1200;  // 20 minutes
-        console.log('Initial time from server:', timeRemaining);
-    } else {
-        timeRemaining = parseInt(timeRemaining);  // Convert to an integer
-        console.log('Parsed time from localStorage:', timeRemaining);
-    }
-
-    const timerElement = document.getElementById('timer');
-    let fifteenMinuteAlertShown = false;  // To ensure the alert only shows once
+    // Initialize timer
+    var timeRemaining = {{ $timeRemaining }};
+    var totalTime = {{ $totalTime }};
 
     function startTimer() {
-        const interval = setInterval(() => {
-            const minutes = Math.floor(timeRemaining / 60);
-            const seconds = timeRemaining % 60;
-            timerElement.textContent = minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
-
-            // Alert when the time reaches 15 minutes (900 seconds remaining)
-            if (timeRemaining === 900 && !fifteenMinuteAlertShown) {
-                alert('You have 15 minutes remaining.');
-                fifteenMinuteAlertShown = true;  // Mark the alert as shown
-            }
-
+        var timerInterval = setInterval(function() {
             if (timeRemaining <= 0) {
-                clearInterval(interval);
-                alert('Time is up! Submitting your answers.');
-                // Optionally submit the form or redirect the user when time is up
+                clearInterval(timerInterval);
+                alert("Time is up!"); // Notify user that time is up
+                // Optionally, you could submit the quiz or redirect here
+            } else {
+                timeRemaining--;
+                var minutes = Math.floor(timeRemaining / 60);
+                var seconds = timeRemaining % 60;
+                document.getElementById('timer').innerHTML = minutes + ":" + (seconds < 10 ? '0' + seconds : seconds);
             }
-
-            timeRemaining--;
-
-            // Save the updated remaining time back to localStorage
-            localStorage.setItem('quiz-{{ $quiz->id }}-timeRemaining', timeRemaining);
-            console.log('Saved time to localStorage:', timeRemaining);
         }, 1000);
     }
 
-    startTimer();
+    // Start the timer when the page loads
+    window.onload = startTimer;
+
+    // Handle answer submission via AJAX
+    document.getElementById('answer-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const formData = new FormData(this);
+        const url = "{{ route('questions.answer', $question->id) }}"; // Adjust to your route
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': formData.get('_token'),
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Update solved and unsolved question counts
+                document.getElementById('solved-count').innerText = data.solvedQuestions;
+                document.getElementById('unsolved-count').innerText = data.unsolvedQuestions;
+            } else {
+                alert('Error submitting answer.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    });
 </script>
 
 </body>

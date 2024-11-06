@@ -36,20 +36,14 @@ class ExamController extends Controller
             'examId' => $examId,
         ]);
     }
-
-    // Generates a unique exam ID
     private function generateExamId($user)
     {
         return 'EXAM-' . $user->id . strtoupper(Str::random(3));
     }
-
-    // Function to start the exam and pass data to the view
     public function startExam($examTitle)
     {
         $user = Auth::user(); 
         $quiz = Quiz::where('heading', $examTitle)->first();
-
-        // Return an error if the quiz is not found
         if (!$quiz) {
             return redirect()->back()->withErrors(['message' => 'Quiz not found.']);
         }
@@ -57,19 +51,12 @@ class ExamController extends Controller
         $quizId = $quiz->id;
         $questions = Question::where('quiz_id', $quizId)->get();
 
-        // Calculate the total number of questions
         $totalQuestions = $questions->count();
-
-        // Assuming a way to track solved questions, replace the following logic as per your need
-        $solvedQuestions = 0; // This can be changed to actual count of solved questions
+        $solvedQuestions = 0;         
         $unsolvedQuestions = $totalQuestions - $solvedQuestions;
 
-        // Customize these as per your application settings
         $packageName = "Your Package Name"; 
         $imageUrl = "path/to/image.png"; 
-
-        // Calculate the time limit for the quiz (e.g., 50 minutes = 3000 seconds)
-        $timeLimit = 50 * 60; 
 
         return view('student.exam_start', [
             'studentName' => $user->firstname,
@@ -80,14 +67,10 @@ class ExamController extends Controller
             'unsolvedQuestions' => $unsolvedQuestions, 
             'packageName' => $packageName,
             'imageUrl' => $imageUrl,
-            'timeLimit' => $timeLimit,  // Pass the time limit to the view
-        ]);
+            'timeLimitInSeconds' => $quiz->time_limit_in_seconds,]);
     }
-
-    // Function to handle result submission after the exam
     public function result(Request $request)
     {
-        // Validate incoming data
         $request->validate([
             'examTitle' => 'required|string',
             'score' => 'required|integer',
@@ -97,7 +80,6 @@ class ExamController extends Controller
         $examTitle = $request->input('examTitle');
         $score = $request->input('score'); 
 
-        // Get the logged-in user and save the result
         $user = Auth::user();
         if ($user) {
             $result = new Result();
@@ -107,39 +89,29 @@ class ExamController extends Controller
             $result->save();
         }
 
-        // Redirect to the result page with score and exam title
         return redirect()->route('student.result', ['examTitle' => $examTitle, 'score' => $score]);
     }
 
-    // Function to show an individual question
     public function showQuestion($id)
     {
-        // Fetch the question by ID
         $question = Question::findOrFail($id);
 
-        // Return the view to display the question
         return view('student.show_question', compact('question'));
     }
 
-    // Function to show the exam summary with the list of questions and status
     public function showExam($examTitle)
     {
-        // Fetch the quiz details using the title
         $quiz = Quiz::where('heading', $examTitle)->first();
 
-        // Redirect if the quiz is not found
         if (!$quiz) {
             return redirect()->back()->withErrors(['message' => 'Quiz not found.']);
         }
 
-        // Define total questions based on the exam type (custom logic for 'Color Vision Test')
         $totalQuestions = strcasecmp(trim($examTitle), 'Color Vision Test') === 0 ? 20 : 40;
 
-        // Assuming a way to track solved questions
         $solvedQuestions = 0; // Replace this with the actual count of solved questions
         $unsolvedQuestions = $totalQuestions - $solvedQuestions;
 
-        // Pass the data to the exam view
         return view('student.show_exam', [
             'quiz' => $quiz,
             'totalQuestions' => $totalQuestions,
@@ -148,4 +120,19 @@ class ExamController extends Controller
             'examTitle' => $examTitle,
         ]);
     }
+    // Example Controller: PaymentController.php
+public function success(Request $request)
+{
+    // Logic to handle successful payment
+
+    // Fetch the user and update access for the purchased package
+    $user = Auth::user();
+    $packageName = $request->input('package_name');  // package name from payment form
+
+    // Add code here to save the package purchase in the database for the user
+    // e.g., by creating a new entry in a "user_packages" table that tracks purchases
+
+    return redirect()->route('exam.dashboard')->with('status', 'Package purchased successfully!');
+}
+
 }

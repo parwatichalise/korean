@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('quiz_id')->constrained()->onDelete('cascade');
             $table->integer('question_number')->default(1);
-            $table->string('question_text');
+            $table->string('question_text')->nullable();
             $table->string('sub_question')->nullable();
             $table->text('question_table')->nullable();
             $table->string('question_image')->nullable();

@@ -288,39 +288,181 @@
         </div>
     </div>
 
-    <!-- Available Exams Section -->
     <h2 class="mt-4"><strong>Available Exams</strong></h2>
     <div class="exam-list">
         @foreach ($quizzes as $quiz)
-            <div class="card">
-                <div class="exam-card-header">
-                    <img src="/images/exam_logo.png" alt="EPS TOPIK" width="50" height="50">
-                    <h6 ><strong>{{ $quiz->heading }}</strong></h6>
+            @if ($quiz->active && ($quiz->price === null || $quiz->price == 0))
+                <!-- Individual Exam Card -->
+                <div class="card mb-4">
+                    <div class="exam-card-header d-flex align-items-center p-3">
+                        @if($quiz->photo)
+                            <img src="/storage/{{ $quiz->photo }}" alt="{{ $quiz->heading }}" width="50" height="50" class="me-2">
+                        @else
+                            <img src="/images/exam_logo.png" alt="Exam Logo" width="50" height="50" class="me-2">
+                        @endif
+                        <h6><strong>{{ $quiz->sub_heading }}</strong></h6>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ $quiz->heading }}</h5>
+                        @foreach ($quiz->tags as $tag)
+                            <span class="rounded-badge">{{ $tag->name }}</span>
+                        @endforeach
+                        <br><br>
+                        <span class="badge-available">{{ $quiz->active ? 'Available' : 'Unavailable' }}</span>
+                        @if($quiz->active)
+                            <a href="{{ route('exam', ['examTitle' => $quiz->heading]) }}" class="btn btn-primary mt-2">START EXAM</a>
+                        @endif
+                    </div>
                 </div>
-                <div class="card-body">
-                    <h5 class="card-title">{{ $quiz->sub_heading }}</h5>
-                    @foreach ($quiz->tags as $tag)
-                        <span class="rounded-badge">{{ $tag->name }}</span>
-                    @endforeach
-                    <br><br>
-                    <span class="badge-available">{{ $quiz->active ? 'Available' : 'Unavailable' }}</span> <!-- Status based on active -->
-
-@if($quiz->active)
-    <a href="{{ route('exam', ['examTitle' => $quiz->heading]) }}" class="btn btn-primary mt-2">
-        START EXAM
-    </a>
-@endif
-
-                </div>
-            </div>
+            @endif
         @endforeach
+    </div>
+    
+<!-- Exam Packages Section -->
+<h2 class="mt-4"><strong>Exam Packages</strong></h2>
+<div class="exam-packages">
+    @if(isset($quizzes) && (is_array($quizzes) ? !empty($quizzes) : $quizzes->isNotEmpty()))
+        @php
+            $quizzesGroupedByPackage = $quizzes->groupBy('package_id');
+        @endphp
+
+        @foreach ($quizzesGroupedByPackage as $packageId => $quizzes)
+            @if ($quizzes->first()->package) <!-- Ensure the package is not null -->
+                @php
+                    $package = $quizzes->first()->package;
+                @endphp
+
+                <div class="card mb-4">
+                    <div class="exam-card-header d-flex align-items-center p-3">
+                        <img src="{{ $package->image ? asset($package->image) : '/images/package.png' }}" 
+                             alt="{{ $package->name }}" width="50" height="50" class="me-2">
+                        <h6><strong>{{ $package->name ?? 'No Package Available' }}</strong></h6>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ $package->name ?? 'No Package Available' }}</h5>
+                        <p class="quiz-count">{{ $quizzes->count() }} exams</p>
+                        <span class="badge-available">{{ $quizzes->first()->active ? 'Available' : 'Unavailable' }}</span>
+                        @if($quizzes->first()->active)
+                            <a href="{{ route('exam.showViews', ['packageName' => $package->name]) }}" class="btn btn-primary mt-2">VIEW</a>
+                        @endif
+                        @if($quizzes->first()->price)
+                            <button class="btn buy-btn mt-2" data-package-name="{{ $package->name }}" 
+                                    data-price="{{ $quizzes->first()->price }}" data-toggle="modal" 
+                                    data-target="#buyExamModal">BUY RS. {{ $quizzes->first()->price }}
+                            </button>
+                        @endif
+                    </div>
+                </div>
+            @endif
+        @endforeach
+    @else
+        <p>No exam packages available.</p>
+    @endif
+</div>
+
+<!-- Modal for eSewa Payment -->
+<div class="modal fade" id="buyExamModal" tabindex="-1" aria-labelledby="buyExamModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="buyExamModalLabel">Buy Exam</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="https://uat.esewa.com.np/epay/main" method="POST">
+                    @csrf
+                    <h5 id="modal-package-name"></h5>
+                    <p id="modal-price"></p>
+
+                    <input type="hidden" name="tAmt" id="totalAmount" value="">
+                    <input type="hidden" name="amt" id="packagePriceInput" value="">
+                    <input type="hidden" name="txAmt" value="0">
+                    <input type="hidden" name="psc" value="0">
+                    <input type="hidden" name="pdc" value="0">
+                    <input type="hidden" name="scd" value="EPAYTEST">
+                    <input type="hidden" name="pid" id="productID" value="">
+                    <input type="hidden" name="su" value="{{ route('payment.success') }}">
+                    <input type="hidden" name="fu" value="{{ route('payment.failure') }}">
+
+                    <button type="submit" class="btn btn-success">BUY WITH ESEWA</button>
+                </form>
+            </div>
+        </div>
     </div>
 </div>
 
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var buyButtons = document.querySelectorAll('.buy-btn');
+
+        buyButtons.forEach(function(button) {
+            button.addEventListener('click', function () {
+                var packageName = this.getAttribute('data-package-name');
+                var price = this.getAttribute('data-price');
+                
+                // Update the modal with the package name and price
+                document.getElementById('modal-package-name').textContent = packageName;
+                document.getElementById('modal-price').textContent = 'Price: Rs. ' + price;
+
+                // Set form values for eSewa
+                document.getElementById('packagePriceInput').value = price;
+                document.getElementById('totalAmount').value = price;
+                document.getElementById('productID').value = 'PID_' + Date.now();
+            });
+        });
+    });
+</script>
+
+<!-- Payment popup message -->
+@if (session('status'))
+    <div id="payment-popup" class="popup">
+        <div class="popup-content">
+            <p>{{ session('status') }}</p>
+            <button id="close-popup">Close</button>
+        </div>
+    </div>
+@endif
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var popup = document.getElementById('payment-popup');
+        if (popup) {
+            popup.style.display = 'block';
+        }
+        
+        var closeButton = document.getElementById('close-popup');
+        if (closeButton) {
+            closeButton.addEventListener('click', function () {
+                popup.style.display = 'none';
+            });
+        }
+    });
+</script>
+<script>
+    $(document).ready(function() {
+        $('.buy-btn').click(function() {
+            const packageName = $(this).data('package-name');
+            const packagePrice = $(this).data('price');
+
+            // Set the values in the modal
+            $('#modal-package-name').text(packageName);
+            $('#modal-price').text('Price: Rs. ' + packagePrice);
+
+            // Set the hidden input values for eSewa
+            $('#totalAmount').val(packagePrice);
+            $('#packagePriceInput').val(packagePrice);
+            $('#productID').val('EXAM_' + packageName); // Example product ID
+        });
+    });
+</script>
+
+
+</div>
 <!-- Bootstrap JS, Popper.js, and jQuery -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
-
 </html>

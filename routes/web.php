@@ -5,15 +5,35 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QuizController;
 use App\Http\Controllers\TagController;
+use App\Http\Controllers\PackageController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\ExamController;
 use App\Http\Controllers\ResultController;
-use App\Http\Controllers\ViewExamController;
 use Illuminate\Support\Facades\Route;
 use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
+use App\Http\Controllers\PaymentController;
+
+// Payment Routes
+Route::match(['get', 'post'], '/payment/success', [PaymentController::class, 'success'])->name('payment.success');
+Route::post('/payment/failure', [PaymentController::class, 'failure'])->name('payment.failure');
+
+// Debug route to test success
+Route::get('/payment/success-debug', function (Request $request) {
+    return response()->json(['message' => 'GET request received', 'data' => $request->all()]);
+});
+
+// eSewa test routes
+Route::post('/esewa/success', function() {
+    return "Payment Successful";
+})->name('esewa.success');
+
+Route::post('/esewa/failure', function() {
+    return "Payment Failed";
+})->name('esewa.failure');
+
 
 Route::get('/',[LoginController::class,'index'])->name('login');
 Route::post('/admin/login',[LoginController::class,'store'])->name('login.store');
@@ -42,6 +62,9 @@ Route::get('/users', [UserController::class, 'list'])->name('user.list');
 //student controller
 Route::get('/student/dashboard', [StudentController::class, 'showDashboard'])->name('student.dashboard');
 Route::get('/show/dashboard', [StudentController::class, 'showDashboard'])->name('dashboard');
+Route::get('/student/dashboard', [StudentController::class, 'showDashboard'])->middleware('auth')->name('student.dashboard');
+Route::post('/questions/{question}/answer', [StudentController::class, 'submitAnswer'])->name('questions.answer');
+
 
 //ExamControlller
 Route::get('/exam/{examTitle}', [ExamController::class, 'exam'])->name('exam');
@@ -53,8 +76,9 @@ Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
 Route::get('/result', [ResultController::class, 'showResult'])->name('result');
 
 
-//ViewExamController
-Route::get('/examview/{packageName}', [ViewExamController::class, 'showViews'])->name('examview');
+Route::get('/exam/view/{packageName}', [StudentController::class, 'showViews'])->name('exam.showViews');
+
+
 
 // Authentication routes for teacher
 Route::middleware(['auth'])->group(function () {
@@ -71,6 +95,8 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('questions', QuestionController::class);
     Route::get('/questions/{quizId}/fetch', [QuestionController::class, 'fetchQuestions'])->name('questions.fetch');
     Route::resource('tags', TagController::class);
+    Route::resource('packages', PackageController::class);
+
 });
   // Exam routes
   Route::get('/exam/{examTitle}', [ExamController::class, 'exam'])->name('exam');
@@ -90,10 +116,13 @@ Route::middleware(['auth'])->group(function () {
 Route::post('/questions/{id}/answer', [QuestionController::class, 'submitAnswer'])->name('questions.answer');
 Route::get('/questions/{id}', [QuestionController::class, 'show'])->name('questions.show');
 
+
 //quiz time
 Route::post('/quiz/{id}/save-time', [QuizController::class, 'saveTime'])->name('quiz.saveTime');
 
 Route::get('/exam-summary', [StudentController::class, 'showExamSummary'])->name('exam.summary');
+Route::get('/available-exams', [StudentController::class, 'showAvailableExams'])->name('available.exams');
+
 
 
 

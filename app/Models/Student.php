@@ -14,4 +14,6 @@ class Student extends Model
     protected $table = 'students'; // This is the table name in the database
 
     protected $fillable = ['name', 'email', 'password']; 
+
+    
 }

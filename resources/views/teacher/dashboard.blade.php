@@ -130,9 +130,16 @@
                     <i class="far fa-circle nav-icon"></i>
                     <p>Tag</p>
                 </a>
-            </li>            
+            </li>     
+            <li class="nav-item">
+              <a href="{{ route('packages.create') }}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Package</p>
+              </a>
+          </li>                
             </ul>
           </li>
+          
 
           <!-- List Update Menu Item -->
           <li class="nav-item">
